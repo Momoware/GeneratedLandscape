@@ -8,6 +8,9 @@ uniform float uSmallWavesSpeed;
 varying float vElevation;
 varying vec2 vUv; 
 varying float offset; 
+varying vec3 vWorldPosition;
+varying vec4 vModelPosition;
+vec3 vNormal;
 
 // Classic Perlin 3D Noise 
 // by Stefan Gustavson
@@ -95,9 +98,13 @@ float cnoise(vec3 P)
 }
 
 void main() {
+
+    vUv = uv;
     vec4 modelPosition = modelMatrix * vec4(position, 1.0);
+    vModelPosition = modelPosition;
     float elevation;
     offset = floor((modelPosition.x + modelPosition.z) * 0.2);
+
     if (normal == vec3(0, 1, 0)) {
         elevation = sin(modelPosition.x * uBigWavesFrequency.x + (uTime + offset) * uBigWavesSpeed)
          * sin(modelPosition.z * uBigWavesFrequency.y + (uTime + offset) * uBigWavesSpeed) * uBigWavesElevation;
@@ -119,4 +126,8 @@ void main() {
     vec4 projectedPosition = projectionMatrix * viewPosition;
     gl_Position = projectedPosition;
     vElevation = elevation;
+
+    
+    // vNormal = normalMatrix * vec3(normal + normalize(elevation) * 0.2)；
+    // vWorldPosition = viewPosition.xyz;
 }

@@ -252,25 +252,25 @@ export default class FirstPersonControls {
 				if (this.moveForward) {
 					this.object.translateZ(- (actualMoveSpeed + this.autoSpeedFactor))
 					//console.log('forward');
-					this.heightUpdate(curHeight);
+					//this.heightUpdate(curHeight);
 				};
 
 				if (this.moveBackward) {
 					this.object.translateZ(actualMoveSpeed);
 					//console.log('backward');
-					this.heightUpdate(curHeight);
+					//this.heightUpdate(curHeight);
 				}
 
 				if (this.moveLeft) {
 					this.object.translateX(- actualMoveSpeed);
 					//console.log('left');
-					this.heightUpdate(curHeight);
+					//this.heightUpdate(curHeight);
 				}
 
 				if (this.moveRight) {
 					this.object.translateX(actualMoveSpeed);
 					//console.log('right');
-					this.heightUpdate(curHeight);
+					//this.heightUpdate(curHeight);
 				}
 
 				// if (this.moveUp) this.object.translateY(actualMoveSpeed);

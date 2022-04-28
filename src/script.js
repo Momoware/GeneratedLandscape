@@ -16,6 +16,26 @@ let cellUnit = defaultSetting.cellUnit;
 let network, grid;
 let gridExecuted = false;
 
+
+function download(data, filename, type) {
+    let file = new Blob([data], {type: type});
+    if (window.navigator.msSaveOrOpenBlob) // IE10+
+        window.navigator.msSaveOrOpenBlob(file, filename);
+    else { // Others
+        let a = document.createElement("a"),
+                url = URL.createObjectURL(file);
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function() {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);  
+        }, 0); 
+    }
+}
+
+
 const sketch = (s) => {
 
 
@@ -38,6 +58,7 @@ const sketch = (s) => {
 
         defaultSetting.data = grid.data();
         console.log(defaultSetting.data);
+        download(defaultSetting.data, 'text/plain');
         gridExecuted = true;
     }
 

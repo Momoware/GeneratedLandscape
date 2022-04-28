@@ -19,8 +19,8 @@ export default class {
     }
 
     data() {
-        //let mapped = 255 - map_range(this.influencedBy, settings.influencedMin, settings.influencedMax, 0, 255); 
-        let mapped = map_range(this.influencedBy, settings.influencedMin, settings.influencedMax, 0, 255); 
+        let mapped = 255 - map_range(this.influencedBy, settings.influencedMin, settings.influencedMax, 0, 255); 
+        //let mapped = map_range(this.influencedBy, settings.influencedMin, settings.influencedMax, 0, 255); 
         return mapped;
     }
 }

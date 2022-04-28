@@ -3,7 +3,7 @@ export default {
     /**
      * 3D Settings
      */
-    baseWdith: 20,
+    baseWdith: 50,
     baseSpacing: 0.1,
     minHeight: 10,
     maxHeight: 200,
@@ -19,7 +19,7 @@ export default {
     dataHigh: 255,
     width: 400,
     height: 400,
-    cellUnit: 10,
+    cellUnit: 20,
     numNodes: 15,
     finished: 0,
     data: [],

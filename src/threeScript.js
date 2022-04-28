@@ -9,6 +9,8 @@ import Controls from './controls';
 import Raycast from './raycast';
 import testVertexShader from './shaders/vertex.glsl';
 import testFragmentShader from './shaders/fragment.glsl';
+import { mergeUniforms } from 'three/src/renderers/shaders/UniformsUtils.js'
+import { UniformsLib } from 'three/src/renderers/shaders/UniformsLib.js'
 
 export function threeScript() {
     /**
@@ -90,7 +92,25 @@ export function threeScript() {
     const ambient = new THREE.AmbientLight(0xFFFFFF, 0.1);
     //scene.add(ambient);
 
+    /**
+     * Fog
+     */
+    scene.fog = new THREE.FogExp2(0xefd1b5, 1.0);
 
+    /**
+     * Raycaster
+     */
+    const raycast = new THREE.Raycaster();
+
+    const pointer = new THREE.Vector2();
+    function onPointerMove(event) {
+
+        pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+        pointer.y = - (event.clientY / window.innerHeight) * 2 + 1;
+
+    }
+
+    document.addEventListener('pointermove', onPointerMove);
 
     /**
      * Renderer
@@ -119,6 +139,7 @@ export function threeScript() {
 
         controls.handleResize();
     });
+
 
     /**
      * Control
@@ -171,6 +192,7 @@ export function threeScript() {
             uSmallWavesElevation: { value: 1.5 },
             uSmallWavesFrequency: { value: 0.2 },
             uSmallWavesSpeed: { value: 0.2 },
+            lightPosition: { type: 'v3', value: new THREE.Vector3(700, 700, 700) },
         }
     })
 
@@ -197,12 +219,13 @@ export function threeScript() {
     let xnum = settings.width / settings.cellUnit;
     let ynum = settings.height / settings.cellUnit;
     let geometries = [];
+    let geometries_top = [];
 
     let cameraX = Math.floor(camera.position.x / (settings.baseWdith + settings.baseSpacing));
     let cameraY = Math.floor(camera.position.z / (settings.baseWdith + settings.baseSpacing));
     let cameraZ = data[cameraX, cameraY];
 
-    camera.position.y = cameraZ;
+    camera.position.y = cameraZ - 100;
 
     for (let i = 0; i < xnum; i++) {
         for (let j = 0; j < ynum; j++) {
@@ -222,11 +245,18 @@ export function threeScript() {
 
 
             let geometry = new THREE.BoxBufferGeometry(baseWdith, height, baseWdith, 30, heightDiv, 30);
+            let geometry_top = new THREE.BoxBufferGeometry(baseWdith, height, baseWdith, 30, heightDiv, 30);
             geometry.translate(position.x * (baseWdith + settings.baseSpacing), height / 2, position.y * (baseWdith + settings.baseSpacing));
+            geometry_top.translate(position.x * (baseWdith + settings.baseSpacing), height / 2, position.y * (baseWdith + settings.baseSpacing));
             //let geometry = new THREE.CylinderBufferGeometry(baseWdith / 2, baseWdith / 2, height, 5, 5);
             //geometry.translate(position.x * baseWdith, 0, position.y * baseWdith);
 
             let mesh = new THREE.Mesh(geometry, waterMaterial);
+            let mesh_top = new THREE.Mesh(geometry_top, waterMaterial);
+            mesh_top.rotateX(Math.PI);
+            //mesh_top.rotateZ(Math.PI);
+            mesh_top.translateY(- maxHeight - 250);
+            mesh_top.translateZ(- settings.width / settings.cellUnit * baseWdith);
 
             geometries.push({
                 height: height,
@@ -235,8 +265,15 @@ export function threeScript() {
                 mesh: mesh
             });
 
-            scene.add(mesh);
+            geometries_top.push({
+                height: height,
+                position: position,
+                geometry: geometry_top,
+                mesh: mesh_top
+            })
 
+            scene.add(mesh);
+            scene.add(mesh_top);
         }
     }
 
@@ -248,14 +285,16 @@ export function threeScript() {
     let lastX = Math.floor(camera.position.x / (settings.baseWdith + settings.baseSpacing));
     let lastY = Math.floor(camera.position.z / (settings.baseWdith + settings.baseSpacing));
 
+    let INTERSECTED;
+
     function animate() {
         requestAnimationFrame(animate);
         renderer.render(scene, camera);
 
         cameraX = Math.floor(camera.position.x / (settings.baseWdith + settings.baseSpacing));
         cameraY = Math.floor(camera.position.z / (settings.baseWdith + settings.baseSpacing));
-        cameraZ = data[cameraX, cameraY];
 
+        /*
         if (cameraX !== lastX && cameraY !== lastY) {
             console.log("cameraX " + cameraX);
             console.log("cameraY " + cameraY);
@@ -264,6 +303,31 @@ export function threeScript() {
 
             lastX = cameraX;
             lastY = cameraY;
+            cameraZ = data[cameraX, cameraY];
+        }
+        */
+
+        /**
+         * Raycasting
+         */
+        // find intersections
+
+        raycast.setFromCamera(pointer, camera);
+
+        const intersects = raycast.intersectObjects(scene.children, false);
+        
+
+        if (intersects.length > 0) {
+            if (INTERSECTED != intersects[0].object) {
+
+                if ( INTERSECTED ) INTERSECTED.material = waterMaterial;
+
+                INTERSECTED = intersects[0].object;
+                INTERSECTED.material = materialHighlight;
+            }
+        } else {
+            if ( INTERSECTED ) INTERSECTED.material = waterMaterial;
+            INTERSECTED = null;
         }
 
         let delta = clock.getDelta();
