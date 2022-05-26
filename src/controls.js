@@ -89,6 +89,8 @@ export default class FirstPersonControls {
 
 		this.onMouseDown = function (event) {
 
+			if (event.button === 2) return;
+
 			this.mouseDown = true;
 
 			if (this.domElement !== document) {
@@ -250,24 +252,40 @@ export default class FirstPersonControls {
 				const actualMoveSpeed = delta * this.movementSpeed;
 
 				if (this.moveForward) {
+					let nextPos = this.object.position.z - (actualMoveSpeed + this.autoSpeedFactor);
+					if (nextPos < 98 || nextPos > 1525) {
+						return
+					} 
 					this.object.translateZ(- (actualMoveSpeed + this.autoSpeedFactor))
 					//console.log('forward');
 					//this.heightUpdate(curHeight);
 				};
 
 				if (this.moveBackward) {
+					let nextPos = this.object.position.z + actualMoveSpeed;
+					if (nextPos < 98 || nextPos > 1525) {
+						return
+					} 
 					this.object.translateZ(actualMoveSpeed);
 					//console.log('backward');
 					//this.heightUpdate(curHeight);
 				}
 
 				if (this.moveLeft) {
+					let nextPos = this.object.position.x - actualMoveSpeed;
+					if (nextPos < 85 || nextPos > 1551) {
+						return
+					} 
 					this.object.translateX(- actualMoveSpeed);
 					//console.log('left');
 					//this.heightUpdate(curHeight);
 				}
 
 				if (this.moveRight) {
+					let nextPos = this.object.position.x + actualMoveSpeed;
+					if (nextPos < 85 || nextPos > 1551) {
+						return
+					} 
 					this.object.translateX(actualMoveSpeed);
 					//console.log('right');
 					//this.heightUpdate(curHeight);

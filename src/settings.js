@@ -3,7 +3,7 @@ export default {
     /**
      * 3D Settings
      */
-    baseWdith: 50,
+    baseWdith: 80.0,
     baseSpacing: 0.1,
     minHeight: 10,
     maxHeight: 200,
