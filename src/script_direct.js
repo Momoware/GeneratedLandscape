@@ -9,6 +9,9 @@ startButton.addEventListener('click', start);
 
 let startButton2 = document.getElementById("start2");
 startButton2.addEventListener('click', start2);
+
+let startButton3 = document.getElementById("start3");
+startButton3.addEventListener('click', start3);
 /*
 document.addEventListener("DOMContentLoaded", function(){
     let el = document.getElementById('p5sketch');
@@ -27,6 +30,12 @@ function start() {
 function start2() {
     window.open(
         "https://ericwu.design/CTCjournal", "_blank"
+    );
+}
+
+function start3() {
+    window.open(
+        "https://github.com/Momoware/GeneratedLandscape/tree/master", "_blank"
     );
 }
 
